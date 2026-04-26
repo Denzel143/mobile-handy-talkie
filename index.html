@@ -3,776 +3,270 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRO CCTV & DVR ESP32-CAM (ENCRYPTED)</title>
+    <title>WebRTC Walkie-Talkie Cloudflare</title>
     <style>
-        :root {
-            --bg: #0f172a; --bg-glass: rgba(15, 23, 42, 0.85); --panel: #1e293b;
-            --primary: #3b82f6; --primary-hover: #2563eb; --accent: #10b981;
-            --danger: #ef4444; --text: #f8fafc; --text-muted: #94a3b8;
-            --border: #334155; --purple: #9c27b0; --purple-hover: #7b1fa2;
-        }
-
-        body {
-            background-color: var(--bg); color: var(--text);
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            margin: 0; padding: 0; padding-bottom: 50px;
-        }
-
-        /* HEADER & STICKY PLAYER */
-        #sticky-header {
-            position: sticky; top: 0; z-index: 1000;
-            background: var(--bg-glass); backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            padding: 15px 20px; text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-        }
-
-        .datetime-display {
-            font-family: monospace; font-size: 16px; font-weight: bold;
-            color: var(--accent); margin-bottom: 10px;
-            letter-spacing: 1px;
-        }
-
-        /* MONITOR DISPLAY */
-        .tv-monitor {
-            width: 100%; max-width: 480px; aspect-ratio: 4 / 3;
-            margin: 0 auto; background-color: #000;
-            border: 3px solid var(--border); border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; position: relative;
-            transition: max-width 0.3s ease;
-        }
-        .tv-monitor img, .tv-monitor canvas {
-            width: 100% !important; height: 100% !important;
-            object-fit: contain !important; display: block;
-        }
-
-        /* TOMBOL FULLSCREEN & SECURITY BADGE */
-        .fullscreen-btn {
-            position: absolute; top: 10px; right: 10px;
-            background: rgba(0, 0, 0, 0.6); color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px;
-            width: 35px; height: 35px; cursor: pointer;
-            font-size: 18px; display: flex; align-items: center; justify-content: center;
-            z-index: 10; transition: 0.2s;
-        }
-        .fullscreen-btn:hover { background: var(--primary); border-color: var(--primary); }
-        
-        .security-badge {
-            position: absolute; top: 10px; left: 10px;
-            background: rgba(16, 185, 129, 0.7); color: white;
-            border-radius: 4px; padding: 4px 8px; font-size: 10px; font-weight: bold;
-            z-index: 10; font-family: monospace;
-        }
-
-        /* KONTROL PLAYBACK */
-        .player-controls {
-            display: none; max-width: 320px; margin: 10px auto 0 auto;
-            background: var(--panel); padding: 10px 15px;
-            border-radius: 8px; border: 1px solid var(--border);
-            align-items: center; gap: 10px;
-        }
-        .player-controls button {
-            background: var(--primary); color: white; border: none;
-            border-radius: 5px; width: 35px; height: 35px; cursor: pointer;
-            font-size: 16px; display: flex; align-items: center; justify-content: center;
-        }
-        .player-controls button:hover { background: var(--primary-hover); }
-        .player-controls input[type="range"] { flex-grow: 1; cursor: pointer; accent-color: var(--primary); }
-        .time-label { font-size: 12px; font-family: monospace; color: var(--text-muted); min-width: 110px; text-align: right;}
-
-        /* TAB MENU */
-        .tab-menu {
-            display: flex; justify-content: center; gap: 10px; margin-top: 15px;
-        }
-        .tab-btn {
-            background: transparent; color: var(--text-muted); border: 2px solid var(--border);
-            padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold;
-            transition: all 0.3s;
-        }
-        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-        /* KONTEN AREA */
-        .content-area { padding: 20px; max-width: 1000px; margin: 0 auto; }
-
-        .connection-panel {
-            background: var(--panel); padding: 15px; border-radius: 10px;
-            display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
-            margin-bottom: 20px; border: 1px solid var(--border);
-        }
-        input[type="text"] {
-            padding: 10px; width: 300px; border-radius: 6px; border: 1px solid var(--border);
-            background: #0f172a; color: white; flex-grow: 1; max-width: 400px;
-        }
-        .btn {
-            padding: 10px 20px; background: var(--accent); color: white;
-            border: none; border-radius: 6px; cursor: pointer; font-weight: bold;
-            transition: 0.2s;
-        }
-        .btn:hover { filter: brightness(1.1); }
+        :root { --bg: #121212; --text: #ffffff; --primary: #007bff; --success: #28a745; --danger: #dc3545; --warning: #ffc107; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; text-align: center; }
+        .container { background: #1e1e1e; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 320px; min-height: 400px; display: flex; flex-direction: column; justify-content: center; }
+        .view { display: none; flex-direction: column; gap: 15px; }
+        .active { display: flex; }
+        input { padding: 10px; border-radius: 5px; border: 1px solid #555; background: #333; color: white; font-size: 16px; text-align: center; }
+        button { padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; transition: 0.2s; }
+        button:active { transform: scale(0.95); }
+        .btn-primary { background: var(--primary); }
+        .btn-success { background: var(--success); }
         .btn-danger { background: var(--danger); }
-        .btn-danger:hover { background: #b91c1c; }
-        .btn-purple { background: var(--purple); }
-        .btn-purple:hover { background: var(--purple-hover); }
-
-        .status-box {
-            text-align: center; font-weight: bold; margin-bottom: 20px;
-            padding: 10px; border-radius: 6px; background: rgba(255, 255, 255, 0.05);
-        }
-
-        .dvr-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
-            flex-wrap: wrap; gap: 10px;
-        }
-        .dvr-controls { display: flex; gap: 10px; flex-wrap: wrap; }
-        
-        .grid-container {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;
-        }
-        .tile {
-            background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
-            padding: 10px; transition: transform 0.2s; display: flex; flex-direction: column;
-        }
-        .tile:hover { transform: translateY(-3px); border-color: var(--primary); }
-        
-        .tile-thumb {
-            width: 100%; aspect-ratio: 4/3; background: #000; border-radius: 6px;
-            margin-bottom: 10px; display: flex; align-items: center; justify-content: center;
-            flex-direction: column; overflow: hidden; position: relative; color: var(--text-muted);
-        }
-        .tile-thumb img { width: 100%; height: 100%; object-fit: cover; }
-        .icon-large { font-size: 30px; margin-bottom: 5px; }
-        .tile-title { font-size: 14px; font-weight: bold; margin-bottom: 10px; text-align: center; word-break: break-all; }
-        .tile-actions { display: flex; flex-direction: column; gap: 5px; margin-top: auto; }
-        
-        .btn-small {
-            padding: 8px; font-size: 12px; border: none; border-radius: 4px;
-            cursor: pointer; font-weight: bold; width: 100%; display: flex; align-items: center; justify-content: center; gap: 5px;
-        }
-        .btn-download { background: var(--primary); color: white; }
-        .btn-play { background: var(--accent); color: white; }
-        .btn-export { background: #E91E63; color: white; }
-        .btn-disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
-
-        .progress-container { width: 80%; background: #333; border-radius: 4px; margin-top: 8px; overflow: hidden; }
-        .progress-bar { height: 6px; background: var(--primary); width: 0%; transition: width 0.2s; }
-        .progress-text { font-size: 11px; margin-top: 4px; font-weight: bold; color: var(--primary); }
-        .loader {
-            border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid var(--primary);
-            border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite;
-        }
+        .btn-ptt { background: var(--warning); color: #000; height: 100px; font-size: 20px; border-radius: 50%; margin: 20px 0; touch-action: manipulation; }
+        .btn-ptt:active { background: #e0a800; }
+        .device-item { background: #2d2d2d; padding: 15px; border-radius: 8px; cursor: pointer; margin-bottom: 10px; border: 1px solid #444; }
+        .device-item:hover { background: #3d3d3d; }
+        .loader { border: 4px solid #333; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* =========================================
-           OVERLAY MODAL PASSWORD
-           ========================================= */
-        .auth-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px);
-            display: none; align-items: center; justify-content: center; z-index: 9999;
-        }
-        .auth-card {
-            background: var(--panel); border: 1px solid var(--border);
-            padding: 30px; border-radius: 12px; width: 320px; text-align: center;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-        }
-        .auth-card h3 { margin-top: 0; color: #ffeb3b; }
-        .auth-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
-        .auth-input {
-            width: 80%; padding: 12px; margin-bottom: 20px; border-radius: 6px;
-            border: 1px solid var(--border); background: #000; color: white;
-            text-align: center; letter-spacing: 5px; font-size: 16px;
-        }
-        .auth-btn-group { display: flex; gap: 10px; }
-        .auth-btn-group button { flex: 1; padding: 10px; }
-
     </style>
+    
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
-    <div id="authOverlay" class="auth-overlay">
-        <div class="auth-card">
-            <h3>🔒 Autentikasi Diperlukan</h3>
-            <p>Masukkan kata sandi terenkripsi untuk mengekstrak dan mengunduh video ini.</p>
-            <input type="password" id="authPwdInput" class="auth-input" placeholder="••••••••">
-            <div class="auth-btn-group">
-                <button class="btn btn-danger" onclick="closeAuth()">Batal</button>
-                <button class="btn" onclick="verifyAuth()">Verifikasi</button>
-            </div>
-        </div>
+<div class="container">
+    <div id="view-sync" class="view active">
+        <h2>Mencari Server</h2>
+        <div class="loader"></div>
+        <p style="font-size: 13px; color: #aaa;" id="sync-status">Menunggu data dari Firebase...</p>
     </div>
 
-    <div id="sticky-header">
-        <div class="datetime-display" id="clock">Memuat Waktu...</div>
+    <div id="view-setup" class="view">
+        <h2>Identitas Baru</h2>
+        <input type="text" id="username-input" placeholder="Masukkan Username Anda">
+        <button class="btn-primary" onclick="saveIdentity()">Simpan & Masuk</button>
+    </div>
+
+    <div id="view-lobby" class="view">
+        <h2>Halo, <span id="display-name"></span></h2>
+        <p style="font-size: 12px; color: #888;">ID: <span id="display-id"></span></p>
+        <button class="btn-primary" onclick="requestUserList()">Cari Perangkat Online</button>
+    </div>
+
+    <div id="view-scanning" class="view">
+        <h2>Perangkat Ditemukan</h2>
+        <div id="device-list" style="max-height: 250px; overflow-y: auto;">
+            <p>Memindai...</p>
+        </div>
+        <button class="btn-danger" onclick="switchView('view-lobby')">Kembali</button>
+    </div>
+
+    <div id="view-incoming" class="view">
+        <h2 style="color: var(--warning)">Panggilan Masuk</h2>
+        <p id="caller-name" style="font-size: 18px; font-weight: bold;"></p>
+        <p id="caller-id" style="font-size: 12px; color: #888;"></p>
+        <button class="btn-success" onclick="acceptCall()">Terima</button>
+        <button class="btn-danger" onclick="rejectCall()">Tolak</button>
+    </div>
+
+    <div id="view-active" class="view">
+        <h2 style="color: var(--success)">Terhubung</h2>
+        <button id="btn-ptt" class="btn-ptt" onmousedown="startTalk()" onmouseup="stopTalk()" ontouchstart="startTalk()" ontouchend="stopTalk()">Tahan<br>Bicara</button>
+        <p id="talk-status">Mikrofon Mati</p>
+        <button class="btn-danger" onclick="disconnectCall()">Disconnect</button>
+    </div>
+</div>
+
+<audio id="remote-audio" autoplay></audio>
+
+<script>
+    // --- KONFIGURASI FIREBASE ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyDJr-6PSzrDEC7J9XfI38g3C_r65x9OlLA",
+        authDomain: "public-database-e58ab.firebaseapp.com",
+        databaseURL: "https://public-database-e58ab-default-rtdb.firebaseio.com",
+        projectId: "public-database-e58ab",
+        storageBucket: "public-database-e58ab.firebasestorage.app",
+        messagingSenderId: "595860953738",
+        appId: "1:595860953738:web:d0ad19f96351191137ab73",
+};
+
+    // Inisialisasi Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    let socket = null;
+    let myUser = { username: '', id: '' };
+    let currentPeerSocketId = null;
+    let incomingCallerSocketId = null;
+    
+    // Variabel WebRTC
+    let localStream = null;
+    let peerConnection = null;
+    const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+    const audioConstraints = { audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } };
+
+    function switchView(viewId) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(viewId).classList.add('active');
+    }
+
+    // --- LISTENER FIREBASE (PUSH NOTIFICATION) ---
+    // Akan tertrigger otomatis saat web dibuka ATAU ketika server Node.js update URL di database
+    database.ref('server/tunnel_url').on('value', (snapshot) => {
+        const url = snapshot.val();
+        const syncStatus = document.getElementById('sync-status');
         
-        <div class="tv-monitor" id="monitorContainer">
-            <div class="security-badge">🔒 E2EE SECURED</div>
-            <button id="fullscreenBtn" class="fullscreen-btn" title="Toggle Fullscreen">⛶</button>
-            
-            <img id="liveImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=">
-            <canvas id="playbackCanvas" style="display: none;"></canvas>
-        </div>
-
-        <div class="player-controls" id="playerControls">
-            <button id="btnPlayPause">▶</button>
-            <input type="range" id="seekSlider" min="0" value="0" step="1">
-            <div class="time-label" id="timeDisplay">00:00 / 00:00</div>
-        </div>
-
-        <div class="tab-menu">
-            <button class="tab-btn active" id="tabLive" onclick="switchTab('live')">Live Stream</button>
-            <button class="tab-btn" id="tabPlayback" onclick="switchTab('playback')">DVR Playback</button>
-        </div>
-    </div>
-
-    <div class="content-area">
-        <div class="status-box" id="statusText" style="color: var(--text-muted);">
-            Menunggu koneksi WebSocket...
-        </div>
-
-        <div id="sectionLive">
-            <div class="connection-panel">
-                <button class="btn btn-purple" id="btnAutoConnect" style="width: 100%; max-width: 400px; font-size: 16px;">
-                    🔄 Ambil URL dari Firebase & Koneksikan
-                </button>
-            </div>
-        </div>
-
-        <div id="sectionPlayback" style="display: none;">
-            <div class="dvr-header">
-                <div>
-                    <h3 style="margin: 0; color: #ffeb3b;">📁 Arsip Rekaman (EVID)</h3>
-                    <small id="totalFiles">Total: 0 Video</small>
-                </div>
-                <div class="dvr-controls">
-                    <button class="btn" onclick="requestList()">🔄 Refresh Daftar</button>
-                    <button class="btn btn-purple" id="sortBtn" onclick="toggleSort()">⬇️ Urutkan: Terbaru</button>
-                </div>
-            </div>
-
-            <div class="grid-container" id="fileGrid"></div>
-        </div>
-    </div>
-
-    <script>
-        // ==========================================
-        // KONFIGURASI KEAMANAN & OBFUSCATION
-        // Tempatkan String Hash Final dari Generator di sini
-        // ==========================================
-        const video_placeholder = "npAZE1Mu0FAex9M6p24tO07deqgX+rYsblSvWf36/yg="; 
-
-        // ==========================================
-        // ALGORITMA DEKRIPSI AFFINE (VIDEO DATA)
-        // A=5, B=210 -> Inverse(A)=205, Adj=46
-        // ==========================================
-        function decryptBuffer(arrayBuffer) {
-            let view = new Uint8Array(arrayBuffer);
-            for (let i = 0; i < view.length; i++) {
-                view[i] = (205 * (view[i] + 46)) % 256;
-            }
-            return arrayBuffer;
+        if (url && url !== "") {
+            syncStatus.innerText = "URL Server ditemukan. Menghubungkan...";
+            connectToServer(url);
+        } else {
+            syncStatus.innerText = "Server sedang offline/restart. Menunggu URL...";
+            if (socket) socket.disconnect(); // Putuskan jika URL ditarik (kosong)
+            switchView('view-sync');
         }
+    });
 
-        setInterval(() => {
-            const now = new Date();
-            const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-            const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-            const str = `${days[now.getDay()]}, ${now.getDate().toString().padStart(2,'0')} ${months[now.getMonth()]} ${now.getFullYear()} | ${now.toLocaleTimeString('id-ID')}`;
-            document.getElementById('clock').innerText = str;
-        }, 1000);
+    // --- KONEKSI KE SERVER VIA SOCKET.IO ---
+    function connectToServer(url) {
+        if (socket) socket.disconnect(); // Reset jika pindah URL (IP ganti)
 
-        let ws;
-        let fileArray = []; 
-        let dvrFiles = {};  
-        let currentMode = 'live'; 
-        let sortNewestFirst = true; 
-        
-        const liveImg = document.getElementById('liveImg');
-        const playbackCanvas = document.getElementById('playbackCanvas');
-        const ctx = playbackCanvas.getContext('2d');
-        const playerControls = document.getElementById('playerControls');
-        const statusText = document.getElementById('statusText');
-        const fileGrid = document.getElementById('fileGrid');
-        const monitorContainer = document.getElementById('monitorContainer');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-        
-        let downloadingFile = null;
-        let downloadedChunks = [];
-        let loadedFrames = [];
-        let playIndex = 0;
-        let isPlaying = false;
-        let playInterval;
-        
-        const FRAME_DELAY = 80;
+        socket = io(url);
 
-        // FULLSCREEN API
-        fullscreenBtn.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                if (monitorContainer.requestFullscreen) monitorContainer.requestFullscreen();
-                else if (monitorContainer.webkitRequestFullscreen) monitorContainer.webkitRequestFullscreen();
-                else if (monitorContainer.msRequestFullscreen) monitorContainer.msRequestFullscreen();
-            } else {
-                if (document.exitFullscreen) document.exitFullscreen();
-                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-                else if (document.msExitFullscreen) document.msExitFullscreen();
-            }
+        socket.on('connect', () => {
+            setupSocketListeners();
+            initAuth();
         });
 
-        document.addEventListener('fullscreenchange', () => { fullscreenBtn.innerHTML = document.fullscreenElement ? '✖' : '⛶'; });
-        document.addEventListener('webkitfullscreenchange', () => { fullscreenBtn.innerHTML = document.webkitFullscreenElement ? '✖' : '⛶'; });
+        socket.on('connect_error', (err) => {
+            document.getElementById('sync-status').innerText = "Gagal terhubung ke Socket. Menunggu server...";
+            switchView('view-sync');
+        });
+    }
 
-        function switchTab(mode) {
-            currentMode = mode;
-            document.getElementById('tabLive').classList.remove('active');
-            document.getElementById('tabPlayback').classList.remove('active');
-            
-            if (mode === 'live') {
-                document.getElementById('tabLive').classList.add('active');
-                monitorContainer.style.maxWidth = '480px';
-                liveImg.style.display = 'block';
-                playbackCanvas.style.display = 'none';
-                playerControls.style.display = 'none';
-                document.getElementById('sectionLive').style.display = 'block';
-                document.getElementById('sectionPlayback').style.display = 'none';
-                pauseVideo();
-            } else {
-                document.getElementById('tabPlayback').classList.add('active');
-                monitorContainer.style.maxWidth = '320px';
-                liveImg.style.display = 'none';
-                playbackCanvas.style.display = 'block';
-                playerControls.style.display = 'flex';
-                document.getElementById('sectionLive').style.display = 'none';
-                document.getElementById('sectionPlayback').style.display = 'block';
-                if(loadedFrames.length > 0) drawFrame();
-            }
-        }
-
-        function toggleSort() {
-            sortNewestFirst = !sortNewestFirst;
-            document.getElementById('sortBtn').innerText = sortNewestFirst ? "⬇️ Urutkan: Terbaru" : "⬆️ Urutkan: Terlama";
-            renderGrid();
-        }
-
-        // ==========================================
-        // AUTO-LISTEN DARI FIREBASE (REALTIME STREAM)
-        // ==========================================
-        const FIREBASE_DB_URL = "https://public-database-e58ab-default-rtdb.firebaseio.com/esp_camera.json";
-        let currentWssUrl = "";
-
-        function listenToFirebase() {
-            setStatus("Menghubungkan ke Firebase Stream...", "var(--text-muted)");
-            const eventSource = new EventSource(FIREBASE_DB_URL);
-
-            // Fungsi pembantu untuk memproses data dari Firebase
-            const processFirebaseEvent = function(event) {
-                try {
-                    const payload = JSON.parse(event.data);
-                    console.log("Data Firebase masuk:", payload);
-                    
-                    let newUrl = "";
-                    
-                    // Jika data berada di root (biasanya saat event 'put')
-                    if (payload.data && payload.data.wss_url) {
-                        newUrl = payload.data.wss_url;
-                    } 
-                    // Jika data yang diupdate langsung URL-nya (biasanya saat path '/wss_url')
-                    else if (payload.path === "/wss_url") {
-                        newUrl = payload.data;
-                    }
-
-                    if (newUrl && newUrl !== currentWssUrl) {
-                        currentWssUrl = newUrl;
-                        setStatus(`URL Baru Diterima! Menyambungkan...`, "var(--primary)");
-                        connectWebSocket(currentWssUrl);
-                    }
-                } catch (e) {
-                    console.error("Gagal parsing data Firebase", e);
-                }
-            };
-
-            // DENGARKAN EVENT 'put' DARI FIREBASE
-            eventSource.addEventListener('put', processFirebaseEvent);
-
-            // DENGARKAN EVENT 'patch' DARI FIREBASE
-            eventSource.addEventListener('patch', processFirebaseEvent);
-
-            eventSource.onerror = function() {
-                setStatus("Firebase Stream terputus, mencoba lagi...", "var(--danger)");
-                eventSource.close();
-                setTimeout(listenToFirebase, 5000);
-            };
-        }
-
-        function connectWebSocket(url) {
-            if(ws) ws.close();
-            
-            ws = new WebSocket(url);
-            ws.binaryType = 'arraybuffer';
-
-            ws.onopen = () => {
-                setStatus("Terhubung! Stream Aktif & Terekripsi.", "var(--accent)");
-            };
-
-            ws.onmessage = async (event) => {
-                // ... (ISI DENGAN LOGIKA onmessage KAMU YANG LAMA UNTUK RENDER VIDEO & EVID) ...
-                if (typeof event.data === "string") {
-                    if (event.data.startsWith("LIST:")) {
-                        fileArray = event.data.substring(5).split(',').filter(f => f.trim() !== "");
-                        renderGrid();
-                        setStatus("Daftar file diperbarui.", "var(--primary)");
-                    }
-                    else if (event.data.startsWith("PROG:")) {
-                        const prog = event.data.substring(5);
-                        setStatus(`Mengunduh ${downloadingFile}... ${prog}%`, "var(--primary)");
-                        updateTileProgress(downloadingFile, prog);
-                    }
-                } 
-                else {
-                    const arrayBuffer = event.data;
-                    const headerByte = new Uint8Array(arrayBuffer)[0];
-                    
-                    if (headerByte === 1) { 
-                        if (currentMode === 'live') {
-                            let encData = arrayBuffer.slice(1);
-                            let decData = decryptBuffer(encData);
-                            const blob = new Blob([decData], { type: 'image/jpeg' });
-                            const urlObj = URL.createObjectURL(blob);
-                            liveImg.src = urlObj;
-                            liveImg.onload = () => URL.revokeObjectURL(urlObj);
-                        }
-                    } 
-                    else if (headerByte === 3) { 
-                        if (downloadingFile) downloadedChunks.push(arrayBuffer.slice(1));
-                    } 
-                    else if (headerByte === 4) { 
-                        if (downloadingFile) {
-                            setStatus(`Selesai mengunduh ${downloadingFile}. Mengekstrak File Enkripsi...`, "var(--accent)");
-                            updateTileProgress(downloadingFile, 100);
-                            let fullBlob = new Blob(downloadedChunks);
-                            let target = downloadingFile;
-                            downloadingFile = null;
-                            processEVID(fullBlob, target);
-                        }
-                    }
-                }
-            };
-
-            ws.onclose = () => {
-                setStatus("WebSocket Terputus. Mencoba reconnect otomatis...", "var(--danger)");
-                // Jika terputus karena konek terlalu cepat, coba lagi setiap 3 detik
-                setTimeout(() => {
-                    if(currentWssUrl) connectWebSocket(currentWssUrl);
-                }, 3000);
-            };
-        }
-
-        // --- HAPUS TOMBOL CONNECT ---
-        // Karena sekarang otomatis, kita ubah fungsi tombol atau langsung jalankan saat halaman dimuat
-        document.getElementById('btnAutoConnect').style.display = 'none'; // Sembunyikan tombol lama
-        window.onload = listenToFirebase; // Langsung jalan saat halaman web dibuka
-
-        function setStatus(msg, color) {
-            statusText.innerText = msg;
-            statusText.style.color = color;
-        }
-
-        function requestList() {
-            if(ws && ws.readyState === WebSocket.OPEN) {
-                document.getElementById('totalFiles').innerText = "Memindai MicroSD...";
-                fileGrid.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px;">
-                        <div class="loader" style="margin: 0 auto 20px auto; width: 45px; height: 45px; border-width: 5px;"></div>
-                        <h3 style="color: var(--text-muted); margin: 0; font-weight: normal;">Mengambil daftar dari ESP32...</h3>
-                    </div>
-                `;
-                ws.send("LIST");
-            } else {
-                alert("WebSocket belum terhubung! Silakan klik 'Koneksikan' dulu.");
-            }
-        }
-
-        function renderGrid() {
-            document.getElementById('totalFiles').innerText = `Total: ${fileArray.length} Video`;
-            fileGrid.innerHTML = '';
-            
-            if (fileArray.length === 0) {
-                fileGrid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 30px;">Daftar kosong. Klik Refresh untuk memindai.</div>`;
-                return;
-            }
-
-            let sortedFiles = [...fileArray];
-            sortedFiles.sort((a, b) => sortNewestFirst ? b.localeCompare(a) : a.localeCompare(b));
-            
-            sortedFiles.forEach(filename => {
-                if (!dvrFiles[filename]) dvrFiles[filename] = { status: 'remote', frames: [], thumb: null };
-                const fileData = dvrFiles[filename];
+    function setupSocketListeners() {
+        socket.on('online_users', (users) => {
+            const listDiv = document.getElementById('device-list');
+            listDiv.innerHTML = '';
+            if (users.length === 0) { listDiv.innerHTML = '<p>Tidak ada perangkat online.</p>'; return; }
+            users.forEach(u => {
                 const div = document.createElement('div');
-                div.className = 'tile';
-                div.id = `tile-${filename}`;
-
-                let thumbHtml = '';
-                if (fileData.status === 'downloaded') {
-                    thumbHtml = `<img src="${fileData.thumb}">`;
-                } else if (fileData.status === 'downloading') {
-                    thumbHtml = `<div class="icon-large">⏳</div><div class="progress-container"><div class="progress-bar" id="progbar-${filename}"></div></div><div class="progress-text" id="progtext-${filename}">Mengunduh... 0%</div>`;
-                } else {
-                    thumbHtml = `<div class="icon-large">📥</div><div style="font-size:12px; margin-top:5px;">Ter-enkripsi di SD Card</div>`;
-                }
-
-                let btnHtml = '';
-                if (fileData.status === 'remote') {
-                    btnHtml = `<button class="btn-small btn-download" onclick="startDownload('${filename}')">⬇️ Unduh ke Browser</button>`;
-                } else if (fileData.status === 'downloaded') {
-                    btnHtml = `
-                        <button class="btn-small btn-play" onclick="loadToPlayer('${filename}')">▶ Putar Video</button>
-                        <button class="btn-small btn-export" onclick="exportToWebM('${filename}')" id="btn-export-${filename}">💾 Save to PC (.webm)</button>
-                        <button class="btn-small" style="background: #64748b; color: white;" onclick="downloadRawEVID('${filename}')">📦 Save Raw (.evid)</button>
-                    `;
-                } else if (fileData.status === 'downloading') {
-                    btnHtml = `<button class="btn-small btn-disabled">Harap Tunggu...</button>`;
-                } else if (fileData.status === 'extracting') {
-                    btnHtml = `<button class="btn-small btn-disabled"><div class="loader"></div> Mengekstrak...</button>`;
-                }
-
-                div.innerHTML = `<div class="tile-thumb" id="thumb-${filename}">${thumbHtml}</div><div class="tile-title">${filename}</div><div class="tile-actions" id="action-${filename}">${btnHtml}</div>`;
-                fileGrid.appendChild(div);
+                div.className = 'device-item';
+                div.innerHTML = `<strong>${u.username}</strong><br><span style="font-size:11px; color:#aaa">${u.id}</span>`;
+                div.onclick = () => initiateCall(u.id, u.username);
+                listDiv.appendChild(div);
             });
-        }
-
-        function updateTileProgress(filename, percent) {
-            const bar = document.getElementById(`progbar-${filename}`);
-            const txt = document.getElementById(`progtext-${filename}`);
-            if(bar) bar.style.width = percent + '%';
-            if(txt) txt.innerText = `Mengunduh... ${percent}%`;
-        }
-
-        window.startDownload = function(filename) {
-            if(!ws || ws.readyState !== WebSocket.OPEN) return alert("Belum terhubung!");
-            if(downloadingFile) return alert("Sedang mengunduh file lain!");
-            dvrFiles[filename].status = 'downloading';
-            downloadingFile = filename;
-            downloadedChunks = [];
-            renderGrid(); 
-            ws.send("DOWNLOAD:" + filename);
-        }
-
-        async function processEVID(blob, filename) {
-            dvrFiles[filename].status = 'extracting';
-            dvrFiles[filename].rawBlob = blob; // <--- Simpan versi mentahnya di sini
-            renderGrid();
-
-            const arrayBuffer = await blob.arrayBuffer();
-            const view = new DataView(arrayBuffer);
-            let offset = 0;
-            const frames = [];
-
-            while (offset < arrayBuffer.byteLength - 4) {
-                const len = view.getUint32(offset, true);
-                offset += 4;
-                if (len === 0 || offset + len > arrayBuffer.byteLength) break;
-                
-                let encFrame = arrayBuffer.slice(offset, offset + len);
-                let decFrame = decryptBuffer(encFrame);
-                
-                const frameBlob = new Blob([decFrame], { type: 'image/jpeg' });
-                frames.push(URL.createObjectURL(frameBlob));
-                offset += len;
-            }
-
-            dvrFiles[filename].frames = frames;
-            dvrFiles[filename].thumb = frames.length > 0 ? frames[0] : '';
-            dvrFiles[filename].status = 'downloaded';
-            setStatus(`Selesai! ${frames.length} Frame telah didekripsi.`, "var(--primary)");
-            renderGrid(); 
-        }
-
-        window.loadToPlayer = function(filename) {
-            loadedFrames = dvrFiles[filename].frames;
-            playIndex = 0;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            const slider = document.getElementById('seekSlider');
-            slider.max = loadedFrames.length - 1;
-            slider.value = 0;
-            drawFrame();
-        };
-
-        function drawFrame() {
-            if(loadedFrames.length === 0) return;
-            const img = new Image();
-            img.onload = () => {
-                playbackCanvas.width = img.width;
-                playbackCanvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-            };
-            img.src = loadedFrames[playIndex];
-            
-            let currentTotalSeconds = Math.floor((playIndex * FRAME_DELAY) / 1000);
-            let endTotalSeconds = Math.floor((loadedFrames.length * FRAME_DELAY) / 1000);
-
-            let curM = Math.floor(currentTotalSeconds / 60).toString().padStart(2, '0');
-            let curS = (currentTotalSeconds % 60).toString().padStart(2, '0');
-            let endM = Math.floor(endTotalSeconds / 60).toString().padStart(2, '0');
-            let endS = (endTotalSeconds % 60).toString().padStart(2, '0');
-            
-            document.getElementById('timeDisplay').innerText = `${curM}:${curS} / ${endM}:${endS}`;
-            document.getElementById('seekSlider').value = playIndex;
-        }
-
-        document.getElementById('btnPlayPause').addEventListener('click', () => {
-            if(loadedFrames.length === 0) return;
-            isPlaying = !isPlaying;
-            document.getElementById('btnPlayPause').innerText = isPlaying ? "⏸" : "▶";
-            
-            if(isPlaying) {
-                if(playIndex >= loadedFrames.length - 1) playIndex = 0;
-                playInterval = setInterval(() => {
-                    playIndex++;
-                    if(playIndex >= loadedFrames.length) {
-                        pauseVideo();
-                    } else {
-                        drawFrame();
-                    }
-                }, FRAME_DELAY);
-            } else {
-                clearInterval(playInterval);
-            }
         });
 
-        function pauseVideo() {
-            isPlaying = false;
-            clearInterval(playInterval);
-            document.getElementById('btnPlayPause').innerText = "▶";
-        }
+        socket.on('call_busy', (msg) => { alert(msg); switchView('view-lobby'); });
+        socket.on('call_failed', (msg) => { alert(msg); switchView('view-lobby'); });
+        socket.on('call_rejected', () => { alert("Panggilan Anda ditolak."); switchView('view-lobby'); });
 
-        document.getElementById('seekSlider').addEventListener('input', (e) => {
-            pauseVideo();
-            playIndex = parseInt(e.target.value);
-            drawFrame();
+        socket.on('incoming_call', (data) => {
+            incomingCallerSocketId = data.callerSocketId;
+            document.getElementById('caller-name').innerText = data.callerUsername;
+            document.getElementById('caller-id').innerText = data.callerId;
+            switchView('view-incoming');
         });
 
-        // ==========================================
-        // SISTEM AUTENTIKASI (MULTI-LAYER PASSWORD)
-        // ==========================================
-        let targetExportFile = "";
+        socket.on('call_accepted', async (data) => {
+            currentPeerSocketId = data.targetSocketId;
+            await setupWebRTC();
+            switchView('view-active');
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            socket.emit('webrtc_offer', { targetSocketId: currentPeerSocketId, offer: offer });
+        });
 
-        // Fungsi ini sekarang hanya membuka modal (tidak langsung merender)
-        window.exportToWebM = function(filename) {
-            targetExportFile = filename;
-            document.getElementById('authPwdInput').value = ""; // Bersihkan kolom
-            document.getElementById('authOverlay').style.display = 'flex';
-        };
+        socket.on('webrtc_offer', async (data) => {
+            if (!peerConnection) return;
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            socket.emit('webrtc_answer', { targetSocketId: data.senderSocketId, answer: answer });
+        });
 
-        // Menutup overlay jika dibatalkan
-        window.closeAuth = function() {
-            document.getElementById('authOverlay').style.display = 'none';
-            targetExportFile = "";
-        };
+        socket.on('webrtc_answer', async (data) => { if (peerConnection) await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer)); });
+        socket.on('webrtc_ice', async (data) => { if (peerConnection) await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate)); });
 
-        // Memproses enkripsi dan memvalidasi password input
-        window.verifyAuth = async function() {
-            const pwd = document.getElementById('authPwdInput').value;
-            if (!pwd) return alert("Kata sandi tidak boleh kosong!");
+        socket.on('call_ended', () => {
+            playDisconnectSound();
+            alert("Panggilan diputus oleh perangkat lawan.");
+            cleanupCall();
+            switchView('view-lobby');
+        });
+    }
 
-            // Terapkan Multi-Layer Encryption ke Input User (Sama persis dengan generator)
-            const b64 = btoa(pwd);
-            let affineBytes = new Uint8Array(b64.length);
-            for(let i = 0; i < b64.length; i++) {
-                affineBytes[i] = (7 * b64.charCodeAt(i) + 100) % 256;
-            }
-            const hashBuffer = await crypto.subtle.digest('SHA-256', affineBytes);
-            let binary = '';
-            let bytes = new Uint8Array(hashBuffer);
-            for(let i = 0; i < bytes.byteLength; i++) { binary += String.fromCharCode(bytes[i]); }
-            const finalHash = btoa(binary);
+    function initAuth() {
+        const storedUser = localStorage.getItem('wt_username');
+        const storedId = localStorage.getItem('wt_id');
+        if (storedUser && storedId) {
+            myUser.username = storedUser; myUser.id = storedId;
+            document.getElementById('display-name').innerText = myUser.username;
+            document.getElementById('display-id').innerText = myUser.id;
+            socket.emit('register', myUser);
+            switchView('view-lobby');
+        } else {
+            switchView('view-setup');
+        }
+    }
 
-            // Cocokkan Hash
-            if (finalHash === video_placeholder) {
-                document.getElementById('authOverlay').style.display = 'none';
-                startWebMRender(targetExportFile); // Panggil fungsi render sebenarnya
-            } else {
-                alert("❌ Kata sandi salah! Akses ditolak.");
-            }
-        };
+    function saveIdentity() {
+        const name = document.getElementById('username-input').value.trim();
+        if (!name) return alert("Username tidak boleh kosong!");
+        const randomId = Array.from({length: 20}, () => Math.floor(Math.random() * 10)).join('');
+        localStorage.setItem('wt_username', name); localStorage.setItem('wt_id', randomId);
+        initAuth();
+    }
 
-        // ==========================================
-        // FUNGSI RENDER (DIPINDAH KE SINI)
-        // ==========================================
-        async function startWebMRender(filename) {
-            const btn = document.getElementById(`btn-export-${filename}`);
-            btn.innerText = "⏳ Merender 0%";
-            btn.classList.add("btn-disabled");
+    function requestUserList() { switchView('view-scanning'); socket.emit('get_users'); }
+    function initiateCall(targetId, targetName) { alert(`Meminta koneksi ke ${targetName}...`); socket.emit('call_request', targetId); }
+    async function acceptCall() { socket.emit('call_accept', incomingCallerSocketId); currentPeerSocketId = incomingCallerSocketId; await setupWebRTC(); switchView('view-active'); }
+    function rejectCall() { socket.emit('call_reject', incomingCallerSocketId); switchView('view-lobby'); }
 
-            const frames = dvrFiles[filename].frames;
-            if(frames.length === 0) return;
+    async function setupWebRTC() {
+        localStream = await navigator.mediaDevices.getUserMedia(audioConstraints);
+        localStream.getAudioTracks().forEach(t => t.enabled = false); 
+        peerConnection = new RTCPeerConnection(rtcConfig);
+        localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+        peerConnection.ontrack = (event) => { document.getElementById('remote-audio').srcObject = event.streams[0]; };
+        peerConnection.onicecandidate = (event) => { if (event.candidate) socket.emit('webrtc_ice', { targetSocketId: currentPeerSocketId, candidate: event.candidate }); };
+    }
 
-            const renderCanvas = document.createElement('canvas');
-            const rCtx = renderCanvas.getContext('2d');
-            
-            const firstImg = new Image();
-            await new Promise(r => { firstImg.onload = r; firstImg.src = frames[0]; });
-            renderCanvas.width = firstImg.width;
-            renderCanvas.height = firstImg.height;
+    function startTalk() {
+        if(localStream) {
+            localStream.getAudioTracks().forEach(track => track.enabled = true);
+            document.getElementById('talk-status').innerText = "🔊 Sedang Berbicara...";
+            document.getElementById('btn-ptt').style.background = "#dc3545";
+        }
+    }
 
-            const stream = renderCanvas.captureStream(1000/FRAME_DELAY);
-            const recorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp8' });
-            const chunks = [];
+    function stopTalk() {
+        if(localStream) {
+            localStream.getAudioTracks().forEach(track => track.enabled = false);
+            document.getElementById('talk-status').innerText = "Mikrofon Mati";
+            document.getElementById('btn-ptt').style.background = "var(--warning)";
+        }
+    }
 
-            recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-            recorder.onstop = () => {
-                const webmBlob = new Blob(chunks, { type: 'video/webm' });
-                const url = URL.createObjectURL(webmBlob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename.replace('.evid', '.webm');
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                btn.innerText = "💾 Save to PC (.webm)";
-                btn.classList.remove("btn-disabled");
-            };
+    function disconnectCall() { socket.emit('end_call'); cleanupCall(); switchView('view-lobby'); }
 
-            recorder.start();
-            for(let i = 0; i < frames.length; i++) {
-                await new Promise(resolve => {
-                    const img = new Image();
-                    img.onload = () => {
-                        rCtx.drawImage(img, 0, 0);
-                        setTimeout(resolve, FRAME_DELAY);
-                    };
-                    img.src = frames[i];
-                });
-                let progress = Math.floor(((i + 1) / frames.length) * 100);
-                btn.innerText = `⏳ Merender ${progress}%`;
-            }
-            recorder.stop();
-        };
-        
-        // ==========================================
-        // FUNGSI DOWNLOAD RAW EVID (TANPA PASSWORD)
-        // ==========================================
-        window.downloadRawEVID = function(filename) {
-            const fileData = dvrFiles[filename];
-            
-            if (!fileData || !fileData.rawBlob) {
-                return alert("File mentah tidak ditemukan!");
-            }
-            
-            // Langsung berikan file mentahnya tanpa verifikasi password
-            const url = URL.createObjectURL(fileData.rawBlob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename; // File akan berakhiran .evid
-            
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            
-            // Bersihkan memori cache URL setelah beberapa detik
-            setTimeout(() => URL.revokeObjectURL(url), 5000);
-        };
+    function cleanupCall() {
+        if(peerConnection) { peerConnection.close(); peerConnection = null; }
+        if(localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+        document.getElementById('remote-audio').srcObject = null;
+        currentPeerSocketId = null;
+    }
 
-    </script>
+    function playDisconnectSound() {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(400, audioCtx.currentTime); 
+        oscillator.frequency.setValueAtTime(300, audioCtx.currentTime + 0.2); 
+        gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+        oscillator.connect(gainNode); gainNode.connect(audioCtx.destination);
+        oscillator.start(); oscillator.stop(audioCtx.currentTime + 0.5);
+    }
+</script>
+
 </body>
 </html>
